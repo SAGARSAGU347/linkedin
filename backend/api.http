@@ -1,0 +1,67 @@
+POST http://localhost:9080/register HTTP/1.1 
+Content-Type: application/json
+
+
+{
+    "username":"kishor",
+    "password":"sagar",
+    "email":"kishore@gmail.com",
+    "name":"kishore girish"
+}
+
+###
+
+POST http://localhost:9080/login HTTP/1.1
+Content-Type: application/json
+
+
+{
+    
+    "email":"kishore@gmail.com",
+    "password":"sagar"
+   
+}
+
+###
+GET http://localhost:9080/get_user_and_profile HTTP/1.1
+Content-Type: application/json
+
+
+{
+    "token": "b10356533a0871eaee3d3a53890b4dc1edcbcb12e543eda007ce45a10e5ca1b2"
+}
+###
+POST  http://localhost:9080/update_profile_data HTTP/1.1
+Content-Type: application/json
+
+
+{
+    "token": "b10356533a0871eaee3d3a53890b4dc1edcbcb12e543eda007ce45a10e5ca1b2",
+     "bio": "Hard Work ",
+     "currentPost": "java  Dev",
+     "pastWork": [
+        {
+            "company":"ssa",
+            "position":"Dev ",
+            "years":"1"
+        }
+     ],
+     "education": [
+        {
+            "school":"vidia",
+            "degree":"ramaiah",
+            "fieldOfStudy":"2016-2024"
+        }
+     ],
+     "__v": 0
+   
+}
+###
+GET http://localhost:9080/user/get_all_users HTTP/1.1
+Content-Type: application/json
+
+
+{
+    "token": "b10356533a0871eaee3d3a53890b4dc1edcbcb12e543eda007ce45a10e5ca1b2"
+   
+}
