@@ -2,7 +2,39 @@ import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import Profile from "../models/profile.model.js";
 import crypto from "crypto";
+import PDFDocument from "pdfkit";
+import fs from "fs";
 
+
+const converUserDataToPdf= async (userData)=>{                                   //Converting User Data to pdf function
+  const doc=new PDFDocument();
+  const outputPath=crypto.randomBytes(32).toString("hex") + ".pdf";
+  const stream =fs.createWriteStream("uploads/"+outputPath);
+
+  doc.pipe(stream);
+  
+  doc.image(`uploads/${userData.userId.profilePicture}`,{align:"center",width:100});
+  doc.fontSize(14).text(`Name: ${userData.userId.name}`);
+  doc.fontSize(14).text(`Email: ${userData.userId.email}`);
+  doc.fontSize(14).text(`Username: ${userData.userId.username}`);
+  doc.fontSize(14).text(`bio: ${userData.userId.bio}`);
+  doc.fontSize(14).text(`Current Position: ${userData.currentPost}`);            //these are the items required in pdf just access with userData.userId.____
+  
+
+  doc.fontSize(14).text("Past Work:")
+  userData.pastWork.forEach((work,index)=>{
+    doc.fontSize(14).text(`CompanyName: ${work.company}`); 
+    doc.fontSize(14).text(`Position: ${work.position}`);
+    doc.fontSize(14).text(`Years: ${work.years}`);
+    
+  
+  
+  })
+
+  doc.end();
+  return outputPath;
+}                                                                                      ///end of converting 
+    
 
 //Register User Controller
 
@@ -88,7 +120,7 @@ return res.status(500).json({message:error.message})
 
 export const updateUserProfile = async (req, res) => {
   try{
-    const {token, ...newUserData}=req.body;   //...newuserdata is a spread operator where extracts all the info from token 
+    const {token, ...newUserData}=req.body;  
 
     const user=await User.findOne({token:token});
 
@@ -142,7 +174,7 @@ export const getUserAndProfile =async(req,res)=>{
 export const updateProfileData=async(req,res)=>{       //updating the profile with education and work
 
   try{
-    const { token, ...newProfileData }=req.body;
+    const { token, ...newProfileData }=req.body;  
 
     const userProfile= await User.findOne({token:token});
     if(!userProfile){
@@ -171,4 +203,17 @@ export const getAllUserProfile=async(req,res)=>{
   catch(err){
     return res.status(500).json({message:error.message})
   }
+}
+
+export const downloadProfile=async(req,res)=>{
+
+  const user_id = req.query.id;
+
+  const userProfile=await Profile.findOne({userId:user_id})
+  .populate('userId','name email username profilePicture');
+
+  let outputPath = await converUserDataToPdf(userProfile);
+
+  return res.json ({"message":outputPath});
+
 }
